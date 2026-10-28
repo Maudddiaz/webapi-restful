@@ -14,11 +14,20 @@ namespace WebApi_Gestion_en_3_capas.PL.Controllers
             _service = service;
         }
 
-        //obtener todos los productos
+        //obtener todos los productos,y por categoria mediante querys
         [HttpGet]
-        public ActionResult<List<ProductoDto>> GetProductos()
+        public ActionResult<List<ProductoDto>> GetProductos([FromQuery] string? Categoria)
         {
-            var _products = _service.ObtenerTodos();
+            if (!string.IsNullOrWhiteSpace(Categoria))
+            {
+                var _products = _service.BuscarPorCategoria(Categoria);
+                if (_products.Count == 0)
+                    return NotFound();
+                return Ok(_products);
+            }
+            ;
+            //pasa por el primer if, si esta vacio el string, entonces hace la busqueda de todos :D
+            var _productos = _service.ObtenerTodos();
             return Ok(_productos);
         }
 
@@ -31,26 +40,13 @@ namespace WebApi_Gestion_en_3_capas.PL.Controllers
         }
 
 
-        //Buscar Por categoria
-        [HttpGet]
-        public ActionResult<List<ProductoDto>> GetPxC([FromQuery] string? Categoria)
-        {
-            if (string.IsNullOrWhiteSpace(Categoria))
-            {
-                return BadRequest(new { mensaje = "Debe proporcionar una categoria valida" });
-            }
-            var _products = _service.BuscarPorCategoria(Categoria);
-            if (_products == null)
-                return NotFound();
-
-            return Ok(_products);
-        }
+ 
 
         //Crear un producto
         [HttpPost] // segun tengo entendido IActionResult no devuelve nada solo codigos de estado, pero yo necesito saber cual fue el producto que cree desde el body
         public ActionResult CreteProducto([FromBody] CreateProductoDto prod)
         {
-            var creacion = _service.agregarProducto(prod);
+            var creacion = _service.AgregarProducto(prod);
             return Ok(creacion);
         }
 
@@ -66,7 +62,13 @@ namespace WebApi_Gestion_en_3_capas.PL.Controllers
             return Ok();
         }
 
-        []
+        //Borrar un Producto 
+        [HttpDelete("{id}")]
+        public IActionResult DeleteProducto(int id)
+        {
+            _service.EliminarProducto(id);
+            return Ok();
+        }
 
     }
 }

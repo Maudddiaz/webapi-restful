@@ -6,7 +6,7 @@ namespace WebApi_Gestion_en_3_capas.BL.Services
     {
         List<ProductoDto> ObtenerTodos();
 
-        ProductoDto agregarProducto(CreateProductoDto p);
+        ProductoDto AgregarProducto(CreateProductoDto p);
         ProductoDto? ObtenerPorId(int Id);
         List<ProductoDto> BuscarPorCategoria(string Categoria);
 
