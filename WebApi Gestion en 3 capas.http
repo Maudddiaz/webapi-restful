@@ -1,0 +1,6 @@
+@WebApi_Gestion_en_3_capas_HostAddress = http://localhost:5218
+
+GET {{WebApi_Gestion_en_3_capas_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
