@@ -32,30 +32,32 @@ namespace WebApi_Gestion_en_3_capas.PL.Controllers
         }
 
         //Obtener un producto
-        [HttpGet("{id}")]
-        public ActionResult<ProductoDto> GetProducto(int Id)
+        [HttpGet("{id:int}")]
+        public ActionResult<ProductoDto> GetProducto(int id)
         {
-            var _product = _service.ObtenerPorId(Id);
+            
+            var _product = _service.ObtenerPorId(id);
+            if (_product == null)
+            {
+                return NotFound();
+            }
             return Ok(_product);
         }
-
-
- 
 
         //Crear un producto
         [HttpPost] // segun tengo entendido IActionResult no devuelve nada solo codigos de estado, pero yo necesito saber cual fue el producto que cree desde el body
         public ActionResult CreteProducto([FromBody] CreateProductoDto prod)
         {
             var creacion = _service.AgregarProducto(prod);
-            return Ok(creacion);
+            return CreatedAtAction(nameof(GetProducto), new {id = creacion.Id},creacion);
         }
 
         //Actualizar un producto
-        [HttpPut("{id}")]
-        public IActionResult UpdateProducto([FromBody] CreateProductoDto prod,int id)
+        [HttpPut("{id:int}")]
+        public IActionResult UpdateProducto([FromBody] CreateProductoDto prod,[FromRoute]int id)
         {
             var actualizacion = _service.ActualizarProducto(prod, id);
-            if (actualizacion == null)
+            if (actualizacion == false)
             {
                 return NotFound();
             }
@@ -63,11 +65,17 @@ namespace WebApi_Gestion_en_3_capas.PL.Controllers
         }
 
         //Borrar un Producto 
-        [HttpDelete("{id}")]
-        public IActionResult DeleteProducto(int id)
+        [HttpDelete("{id:int}")]
+        public IActionResult DeleteProducto([FromRoute]int id)
         {
-            _service.EliminarProducto(id);
-            return Ok();
+
+            var condicion = _service.EliminarProducto(id);
+            if(condicion == false)
+            {
+                return NotFound();
+            }
+            return NoContent();
+            
         }
 
     }
